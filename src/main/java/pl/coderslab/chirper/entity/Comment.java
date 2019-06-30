@@ -1,5 +1,7 @@
 package pl.coderslab.chirper.entity;
 
+import pl.coderslab.chirper.validator.NoSwearing;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -10,6 +12,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NoSwearing
     private String text;
 
     @ManyToOne

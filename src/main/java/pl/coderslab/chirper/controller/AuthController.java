@@ -65,7 +65,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-        System.out.println("In signup");
+
         if(userRepository.existsByEmail(signUpRequest.getEmail())) {
             return new ResponseEntity(new CustomResponse(false, "Email Address already in use!"),
                     HttpStatus.BAD_REQUEST);
@@ -77,10 +77,11 @@ public class AuthController {
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        UserRole userRole = roleRepository.findByName("ROLE_USER");
-                //.orElseThrow(() -> new AppException("User Role not set."));
+        UserRole userRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new IllegalArgumentException("User Role not set.")); //TODO wlasny expception
 
         user.setRoles(Collections.singleton(userRole));
+        System.out.println(user.getRoles().size());
 
         User result = userRepository.save(user);
 
@@ -118,15 +119,15 @@ public class AuthController {
         System.out.println(user.getFirstName());
         userRepository.save(user);
 
-    }
+    } */
 
     @GetMapping("validate-email")
-    @CrossOrigin(methods = {RequestMethod.GET, RequestMethod.OPTIONS, RequestMethod.POST}) //TODO configure CORS (default or open)
+    //@CrossOrigin(methods = {RequestMethod.GET, RequestMethod.OPTIONS, RequestMethod.POST}) //TODO configure CORS (default or open)
     public boolean checkEmail(@RequestParam String email){
         boolean emailExists = emailService.emailExists(email);
         System.out.println(emailExists);
         return emailExists;
-    }*/
+    }
 
 
 

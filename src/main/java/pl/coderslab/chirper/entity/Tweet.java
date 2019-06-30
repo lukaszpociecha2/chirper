@@ -1,5 +1,7 @@
 package pl.coderslab.chirper.entity;
 
+import pl.coderslab.chirper.validator.NoSwearing;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ public class Tweet {
     private Long id;
 
     @Lob
+    @NoSwearing
     private String text;
 
     @ManyToOne

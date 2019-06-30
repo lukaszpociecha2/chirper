@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-public class User {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
