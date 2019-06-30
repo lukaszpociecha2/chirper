@@ -13,7 +13,7 @@
 <!--            <property name="javax.persistence.schema-generation.database.action"-->
 <!--                      value="none"/>-->
 <!--&lt;!&ndash;            <property name="javax.persistence.sql-load-script-source"&ndash;&gt;-->
-<!--&lt;!&ndash;                      value="META-INF/sql/data.sql" />&ndash;&gt;-->
+<!--&lt;!&ndash;                      value="META-INF/sql/import.sql" />&ndash;&gt;-->
 <!--            <property name="hibernate.hbm2ddl.auto" value="update"/>-->
 <!--            <property name="hibernate.show_sql" value="true"/>-->
 <!--            <property name="hibernate.format_sql" value="true"/>-->
