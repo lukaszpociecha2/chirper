@@ -1,6 +1,7 @@
 package pl.coderslab.chirper.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -23,7 +24,7 @@ public class User  {
     @NotBlank
     private String lastName;
 
-    @NaturalId
+
     @NotBlank
     @Email
     private String email;
@@ -33,7 +34,7 @@ public class User  {
     @OneToMany(mappedBy = "user")
     List<Tweet> tweets = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
 
 

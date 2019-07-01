@@ -3,24 +3,25 @@ package pl.coderslab.chirper.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.coderslab.chirper.entity.User;
 import pl.coderslab.chirper.entity.UserRole;
-import pl.coderslab.chirper.payload.CustomResponse;
-import pl.coderslab.chirper.payload.JwtAuthenticationResponse;
-import pl.coderslab.chirper.payload.LoginRequest;
-import pl.coderslab.chirper.payload.SignUpRequest;
+import pl.coderslab.chirper.payload.*;
 import pl.coderslab.chirper.repository.UserRoleRepository;
 import pl.coderslab.chirper.repository.UserRepository;
 import pl.coderslab.chirper.security.JwtTokenProvider;
+import pl.coderslab.chirper.security.UserPrincipal;
 import pl.coderslab.chirper.service.EmailService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.Collections;
 @RequestMapping("/api/auth/**")
 public class AuthController {
 
+    //TODO pozamieniac wszystkie voidy na ResponseEntity<?>
 
     private UserRepository userRepository;
     private EmailService emailService;
@@ -92,6 +94,45 @@ public class AuthController {
         return ResponseEntity.created(location).body(new CustomResponse(true, "User registered successfully"));
     }
 
+    @PutMapping("/update")
+    @PatchMapping("/update") //TODO PATCH is not allowed (wlaczyć @RequestMapping(PUT,PATCH)
+    @Secured("ROLE_USER")
+    public void update(@AuthenticationPrincipal UserPrincipal user, @RequestBody UpdateUserRequest updateUser){
+
+        System.out.println("updateUser firstName null:" + updateUser.getFirstName().isEmpty());
+
+        //TODO do metody PATCH przychodzi tylko jeden wypelniony field (lub wiecej) wiec pola z UpdateUserRequest maja wartośc null lub moga przyjsc isEmpty
+        //todo osbluzyc if'ami nullpointery
+        // nie robić validatorem na poziomie parametrow metody, bo obiekt musialby miec wszystkie pola - tylko przy tworzeniu
+
+        if(!userRepository.existsByEmail(updateUser.getEmail()) || updateUser.getEmail().equals(user.getEmail())){
+            User userToSave = userRepository.findUserById(user.getId()).get();
+            userToSave.setFirstName(updateUser.getFirstName());
+            userToSave.setLastName(updateUser.getLastName());
+            userToSave.setEmail(updateUser.getEmail());
+            userToSave.setPassword(updateUser.getPassword());
+            userToSave.setPassword(passwordEncoder.encode(updateUser.getPassword()));
+            userRepository.save(userToSave);
+        }
+        else {
+            System.out.println("User email already exists"); //TODO throw new Error
+        }
+    }
+
+
+    @DeleteMapping("/delete")
+    @Transactional
+    public void delete(@AuthenticationPrincipal UserPrincipal user){
+        User userToDelete = userRepository.findUserById(user.getId()).get();
+        userToDelete.getRoles().clear();
+        userRepository.delete(userToDelete);
+        System.out.println("User deleted");
+
+        //TODO skasowanie użytkownika powoduje, że próba wykorzystania tokena, kończy się:
+        //Principal anonymousUser - AUTHORIZATION_FAILURE
+
+        //SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+    }
 
     /*@GetMapping("/api/foos")
     public Boolean foo(){
