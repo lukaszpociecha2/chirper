@@ -22,3 +22,7 @@ http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
                       value="org.hibernate.dialect.MySQL8Dialect" />
             <property name="hibernate.connection.characterEncoding" value="utf8" />
         </properties></persistence-unit></persistence>-->
+
+<!--
+<property name="hibernate.dialect"
+          value="org.hibernate.dialect.MySQL57Dialect" />-->

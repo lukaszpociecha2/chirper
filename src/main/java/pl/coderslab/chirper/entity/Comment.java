@@ -18,8 +18,8 @@ public class Comment {
     @ManyToOne
     private User user;
 
-  /*  @ManyToOne
-    Tweet tweet;*/
+    @ManyToOne
+    Tweet tweet;
 
     private LocalDateTime created;
     private LocalDateTime updated;
@@ -61,13 +61,13 @@ public class Comment {
         this.user = user;
     }
 
-    /*public Tweet getTweet() {
+    public Tweet getTweet() {
         return tweet;
     }
 
     public void setTweet(Tweet tweet) {
         this.tweet = tweet;
-    }*/
+    }
 
     public LocalDateTime getCreated() {
         return created;

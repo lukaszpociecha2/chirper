@@ -21,7 +21,8 @@ public class Tweet {
     @ManyToOne
     User user;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+    @OneToMany(/*mappedBy = "tweet", */fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+            //TODO nie dziala mapped by -> tworzy nowa tabele zamiast kolumny w comment
     List<Comment> comments = new ArrayList<>();
 
 
