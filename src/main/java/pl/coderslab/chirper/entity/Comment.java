@@ -1,5 +1,6 @@
 package pl.coderslab.chirper.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import pl.coderslab.chirper.validator.NoSwearing;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class Comment {
     private User user;
 
     @ManyToOne
+    @JsonIgnore
     Tweet tweet;
 
     private LocalDateTime created;

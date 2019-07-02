@@ -11,9 +11,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import pl.coderslab.chirper.entity.Comment;
+import pl.coderslab.chirper.entity.Tweet;
 import pl.coderslab.chirper.entity.User;
 import pl.coderslab.chirper.entity.UserRole;
 import pl.coderslab.chirper.payload.*;
+import pl.coderslab.chirper.repository.CommentRepository;
+import pl.coderslab.chirper.repository.TweetRepository;
 import pl.coderslab.chirper.repository.UserRoleRepository;
 import pl.coderslab.chirper.repository.UserRepository;
 import pl.coderslab.chirper.security.JwtTokenProvider;
@@ -21,9 +25,9 @@ import pl.coderslab.chirper.security.UserPrincipal;
 import pl.coderslab.chirper.service.EmailService;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 
 @RestController
@@ -38,15 +42,19 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
     private JwtTokenProvider tokenProvider;
+    private CommentRepository commentRepository;
+    private TweetRepository tweetRepository;
 
     @Autowired
-    public AuthController(UserRepository userRepository, EmailService emailService, UserRoleRepository roleRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider) {
+    public AuthController(UserRepository userRepository, EmailService emailService, UserRoleRepository roleRepository, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtTokenProvider tokenProvider, CommentRepository commentRepository, TweetRepository tweetRepository) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.roleRepository = roleRepository;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.commentRepository = commentRepository;
+        this.tweetRepository = tweetRepository;
     }
 
     @PostMapping("/signin")
@@ -121,10 +129,17 @@ public class AuthController {
 
 
     @DeleteMapping("/delete")
-    @Transactional
+//    @Transactional
     public void delete(@AuthenticationPrincipal UserPrincipal user){
         User userToDelete = userRepository.findUserById(user.getId()).get();
         userToDelete.getRoles().clear();
+
+        Collection<Tweet> tweetCollection = tweetRepository.findAllByUserId(user.getId());
+        tweetRepository.deleteAll(tweetCollection);
+
+        Collection<Comment> commentCollection = commentRepository.findAllByUserId(user.getId());
+        commentRepository.deleteAll(commentCollection);
+
         userRepository.delete(userToDelete);
         System.out.println("User deleted");
 
