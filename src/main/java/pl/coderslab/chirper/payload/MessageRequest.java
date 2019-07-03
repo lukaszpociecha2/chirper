@@ -1,25 +1,18 @@
-package pl.coderslab.chirper.entity;
+package pl.coderslab.chirper.payload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import pl.coderslab.chirper.entity.User;
 
-import javax.persistence.*;
+public class MessageRequest {
 
-@Entity
-public class Message {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String text;
 
-    @ManyToOne
-    @JsonIgnore
     private User author;
 
-    @ManyToOne
-    @JsonIgnore
     private User recepient;
+
+    private Long recepientId;
 
 
     public String getText() {
@@ -52,5 +45,13 @@ public class Message {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getRecepientId() {
+        return recepientId;
+    }
+
+    public void setRecepientId(Long recepientId) {
+        this.recepientId = recepientId;
     }
 }

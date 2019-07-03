@@ -37,6 +37,9 @@ public class User  {
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<UserRole> roles = new HashSet<>();
 
+    @OneToMany(mappedBy = "recepient", cascade = CascadeType.REMOVE)
+    List<Message> incomingMessages = new ArrayList<>();
+
 
     public User() {
     }
@@ -103,5 +106,13 @@ public class User  {
 
     public void setRoles(Set<UserRole> roles) {
         this.roles = roles;
+    }
+
+    public List<Message> getIncomingMessages() {
+        return incomingMessages;
+    }
+
+    public void setIncomingMessages(List<Message> incomingMessages) {
+        this.incomingMessages = incomingMessages;
     }
 }
