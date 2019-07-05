@@ -1,6 +1,7 @@
 package pl.coderslab.chirper.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,18 @@ import pl.coderslab.chirper.repository.TweetRepository;
 import pl.coderslab.chirper.repository.UserRepository;
 import pl.coderslab.chirper.security.UserPrincipal;
 
+
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/tweets")
 public class TweetController {
+
+    //TODO REFACTOR RESPONSE OBJECTS SO DON'T CONTAIN UNNECESSARY INFORMATION LIKE PASSWORD
 
     private final TweetRepository tweetRepository;
     private final UserRepository userRepository;
@@ -40,21 +46,22 @@ public class TweetController {
         return true;
     }
 
-    @GetMapping("/get-all")
+    @GetMapping()
     public List<Tweet> getTweets(){
         return tweetRepository.findAll();
     }
 
-    @PostMapping("/add")
+    @PostMapping()
     @Secured("ROLE_USER")
-    public void addTweet(@AuthenticationPrincipal UserPrincipal user, @RequestBody Tweet tweet){
+    public Tweet addTweet(@AuthenticationPrincipal UserPrincipal user, @RequestBody Tweet tweet){
         tweet.setUser(userRepository.findUserById(user.getId()).get());
         tweetRepository.save(tweet);
+        return tweet;
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/{tweetId}")
     @Secured("ROLE_USER")
-    public void delete(@AuthenticationPrincipal UserPrincipal user, @RequestParam Long tweetId){
+    public void delete(@AuthenticationPrincipal UserPrincipal user, @PathVariable Long tweetId){
         User author = userRepository.findUserById(user.getId()).get();
         Tweet tweetToDelete = tweetRepository.findById(tweetId).get();
         if(tweetToDelete.getUser().getId().equals(tweetRepository.findById(tweetId).get().getUser().getId())) {
@@ -65,18 +72,22 @@ public class TweetController {
         }
     }
 
-    @PutMapping("/update")
+    @PutMapping()
     @Secured("ROLE_USER")
-    public void delete(@AuthenticationPrincipal UserPrincipal user, @RequestBody TweetRequest tweetRequest){
+    public Tweet update(@AuthenticationPrincipal UserPrincipal user, @RequestBody TweetRequest tweetRequest, HttpServletResponse servletResponse) throws IOException {
         User author = userRepository.findUserById(user.getId()).get();
         Tweet tweetToUpdate = tweetRepository.findById(tweetRequest.getId()).get();
         if(tweetToUpdate.getUser().getId().equals(author.getId())) {
             tweetToUpdate.setText(tweetRequest.getText());
             tweetRepository.save(tweetToUpdate);
-
             System.out.println("Tweet updated");
+            return tweetToUpdate;
+
         } else {
             System.out.println("Cannot be deleted. You are not the author.");
+            servletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "You are not the author");
+            return null;
+
         }
     }
 

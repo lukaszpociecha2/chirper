@@ -33,6 +33,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .claim("name", userPrincipal.getFirstName())
                 .compact();
     }
 

@@ -29,6 +29,7 @@ public class User  {
     @Email
     private String email;
     @NotBlank
+    @JsonIgnore
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)

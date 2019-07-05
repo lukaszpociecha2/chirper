@@ -27,7 +27,7 @@ public class MessageController {
     }
 
 
-    @PostMapping("send-message")
+    @PostMapping()
     @Secured("ROLE_USER")
     public void sendMessageToUser(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody MessageRequest messageRequest){
         User author = userRepository.findUserById(userPrincipal.getId()).get();
@@ -38,7 +38,7 @@ public class MessageController {
         messageRepository.save(message);
     }
 
-    @GetMapping("all")
+    @GetMapping()
     @Secured("ROLE_USER")
     public List<MessageResponse> getAllMessagesToActiveUser(@AuthenticationPrincipal UserPrincipal userPrincipal){
         List<Message> messages = messageRepository.findAllByRecepientId(userPrincipal.getId());
@@ -55,7 +55,7 @@ public class MessageController {
 
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping()
     @Secured("ROLE_USER")
     public void deleteMessage(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam Long messageId){
 
