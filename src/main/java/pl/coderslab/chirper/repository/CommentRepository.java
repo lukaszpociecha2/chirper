@@ -16,7 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query(value = "DELETE FROM comment WHERE id=?1", nativeQuery = true)
     @Modifying
-    public void myDeleteById(Long id);
+    void myDeleteById(Long id);
 
     Collection<Comment> findAllByUserId(Long id);
 }

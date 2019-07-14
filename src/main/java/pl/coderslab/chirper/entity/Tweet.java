@@ -1,5 +1,6 @@
 package pl.coderslab.chirper.entity;
 
+import lombok.Data;
 import pl.coderslab.chirper.validator.NoSwearing;
 
 import javax.persistence.*;
@@ -8,13 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 public class Tweet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Lob
     @NoSwearing
     private String text;
 
@@ -22,8 +23,7 @@ public class Tweet {
     User user;
 
     @OneToMany(mappedBy = "tweet", fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
-            //TODO nie dziala mapped by -> tworzy nowa tabele zamiast kolumny w comment
-    List<Comment> comments = new ArrayList<>();
+    List<Comment> comments = new ArrayList<>(); //TODO shouldn't be ThreadSafe list?
 
 
     private LocalDateTime created;
@@ -37,43 +37,4 @@ public class Tweet {
     }
 
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
 }

@@ -1,10 +1,13 @@
 package pl.coderslab.chirper.entity;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 public class UserRole {
 
     @Id

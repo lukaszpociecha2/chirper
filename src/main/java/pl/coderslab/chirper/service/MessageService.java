@@ -1,10 +1,11 @@
-package pl.coderslab.chirper.controller;
+package pl.coderslab.chirper.service;
 
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import pl.coderslab.chirper.entity.Message;
 import pl.coderslab.chirper.entity.User;
+import pl.coderslab.chirper.errors.MessageNotFoundExeption;
+import pl.coderslab.chirper.errors.UnauthorizedException;
 import pl.coderslab.chirper.payload.MessageRequest;
 import pl.coderslab.chirper.payload.MessageResponse;
 import pl.coderslab.chirper.repository.MessageRepository;
@@ -14,33 +15,32 @@ import pl.coderslab.chirper.security.UserPrincipal;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
-@RequestMapping("/messages")
-public class MessageController {
+@Service
+public class MessageService {
+
 
     private UserRepository userRepository;
     private MessageRepository messageRepository;
 
-    public MessageController(UserRepository userRepository, MessageRepository messageRepository) {
+    public MessageService(UserRepository userRepository, MessageRepository messageRepository) {
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
     }
 
 
-    @PostMapping()
-    @Secured("ROLE_USER")
-    public void sendMessageToUser(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestBody MessageRequest messageRequest){
+    public Message sendMessage(UserPrincipal userPrincipal, MessageRequest messageRequest){
+
         User author = userRepository.findUserById(userPrincipal.getId()).get();
+
         Message message = new Message();
-        message.setAuthor(author);
-        message.setRecepient(userRepository.findUserById(messageRequest.getRecepientId()).get());
-        message.setText(messageRequest.getText());
-        messageRepository.save(message);
+            message.setAuthor(author);
+            message.setRecepient(userRepository.findUserById(messageRequest.getRecepientId()).get());
+            message.setText(messageRequest.getText());
+        return messageRepository.save(message);
+
     }
 
-    @GetMapping()
-    @Secured("ROLE_USER")
-    public List<MessageResponse> getAllMessagesToActiveUser(@AuthenticationPrincipal UserPrincipal userPrincipal){
+    public List<MessageResponse> getAllReceivedMessages(UserPrincipal userPrincipal){
         List<Message> messages = messageRepository.findAllByRecepientId(userPrincipal.getId());
         List<MessageResponse> messageResponses = new ArrayList<>();
         for (Message message : messages) {
@@ -52,22 +52,15 @@ public class MessageController {
         }
 
         return messageResponses;
-
     }
 
-    @DeleteMapping()
-    @Secured("ROLE_USER")
-    public void deleteMessage(@AuthenticationPrincipal UserPrincipal userPrincipal, @RequestParam Long messageId){
-
-        Message message = messageRepository.findById(messageId).get();
+    public Message deleteMesage(UserPrincipal userPrincipal, Long messageId){
+        Message message = messageRepository.findById(messageId).orElseThrow(()-> new MessageNotFoundExeption(messageId));
         if(message.getRecepient().getId()==userRepository.findUserById(userPrincipal.getId()).get().getId()){
             messageRepository.delete(message);
+            return message;
         } else {
-            System.out.println("You are not the recepient.");
+            throw new UnauthorizedException("You are not the recepient of this message with id" + messageId);
         }
     }
-
-
-
-
 }

@@ -1,4 +1,4 @@
-package pl.coderslab.chirper.controller;
+package pl.coderslab.chirper.restController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;

@@ -1,6 +1,7 @@
 package pl.coderslab.chirper.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.NaturalId;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Data
 public class User  {
 
     @Id

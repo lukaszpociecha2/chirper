@@ -72,36 +72,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        //super.configure(http);
-
-        // wersja pierwotna działająca z frontendem
-        /*http
-                .cors()
-                    .and()
-                .csrf()
-                    .disable()
-                .authorizeRequests().anyRequest().permitAll().and().authorizeRequests().antMatchers(HttpMethod.POST).permitAll();*/
-
-        // wersja z Spring Baeldung Spring Security for Rest API
-
-        /*http
-                .csrf().disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(restAuthenticationEntryPoint)
-                    .and()
-                .authorizeRequests()
-                .antMatchers("/api/foos").authenticated()
-                .antMatchers("api/admin/**").hasRole("ADMIN")
-                    .and()
-                .formLogin()
-                    .successHandler(mySuccessHandler)
-//                    .failureHandler(myFailureHandler)
-                        .and()
-                .logout();*/
-
-        // wersja z https://www.callicoder.com/spring-boot-spring-security-jwt-mysql-react-app-part-2/
-        // Spring Securtity JWT for REST API
-
         http
                 .cors()
                 .and()
@@ -124,8 +94,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.css",
                         "/**/*.js")
                 .permitAll()
-
-                //.antMatchers("/test").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/user")
+                .permitAll()
 
                 .antMatchers("/api/auth/**")
                 .permitAll()
@@ -133,10 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/api/polls/**", "/api/users/**")
                 .permitAll()
-               /* .antMatchers("/tweets/get-all")
-                .permitAll()
-                .antMatchers("/tweets/add/**")
-                .hasRole("USER")*/
+
                 .anyRequest()
                 .authenticated();
 

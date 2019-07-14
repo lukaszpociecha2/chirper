@@ -1,12 +1,14 @@
 package pl.coderslab.chirper.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import pl.coderslab.chirper.validator.NoSwearing;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 public class Comment {
 
     @Id
